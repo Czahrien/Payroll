@@ -8,6 +8,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.IOException;
 import java.io.FileNotFoundException;
+import java.util.TreeMap;
 
 /**
  *
@@ -17,6 +18,8 @@ public class PayrollStorage implements Serializable {
     
     private static transient PayrollStorage instance = null;
     public static transient PayrollPlugin plugin = null;
+    
+    public TreeMap<String,PayrollEntry> myPayrolls;
     
     public static PayrollStorage getInstance(PayrollPlugin p) {
         if(instance == null) {
@@ -42,9 +45,14 @@ public class PayrollStorage implements Serializable {
         return new PayrollStorage();
     }
     
+    public void checkPayouts() {
+        for(PayrollEntry pe : myPayrolls.values()) {
+            pe.payout();
+        }
+    }
     
     private PayrollStorage() {
-        
+        myPayrolls = new TreeMap<>();
     }
     
     public void save() {
