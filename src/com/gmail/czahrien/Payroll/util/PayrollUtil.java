@@ -1,14 +1,10 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.gmail.czahrien.Payroll.util;
 
 import java.util.LinkedList;
 import java.util.ListIterator;
 
 /**
- *
+ * A class containing several standalone utility functions.
  * @author Czahrien
  */
 public class PayrollUtil {
@@ -57,9 +53,10 @@ public class PayrollUtil {
     }
     
     /**
-     * Converts a number of milliseconds
-     * @param millis
-     * @return 
+     * Converts a number of milliseconds to a String containing a human-readable
+     * time.
+     * @param millis The number of milliseconds to convert.
+     * @return A human-readable time string.
      */
     public static String timeToString(long millis) {
         String ret = "";
