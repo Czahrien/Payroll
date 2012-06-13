@@ -30,7 +30,7 @@ public class PayrollCommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
             switch(cmd.getName().toLowerCase()) {
                 case "payroll":
-                    if(sender.hasPermission("Payroll.user")) {
+                    if( sender.hasPermission("Payroll.user") ) {
                         if(!(sender instanceof Player)) {
                             sender.sendMessage(ChatColor.RED + "This command is only valid for players!");
                             return true;
@@ -64,13 +64,19 @@ public class PayrollCommand implements CommandExecutor {
                                         page = Integer.parseInt(args[1]);
                                     } catch(NumberFormatException e) {
                                         sender.sendMessage(ChatColor.RED + "Invalid page number: " + args[1]);
+                                        return true;
                                     }
                                 }
                                 Paginate.paginator(myPayrollStorage.myPayrolls.values(), sender, page, 5);
                                 return true;
                             case "add":
                                if(args.length > 2) {
-                                   //TODO: Annoying things I don't want to do at the moment.
+                                   if(myPayrollStorage.myPayrolls.containsKey(args[1])) {
+                                       sender.sendMessage(ChatColor.RED + "There is already a payroll with this name!" );
+                                   } else {
+                                       myPayrollStorage.myPayrolls.put(args[1],new PayrollEntry(args[1],-1));
+                                       sender.sendMessage(ChatColor.AQUA + "Payroll " + args[1] + " successfully created! Use /payrolls mod to configure it.");
+                                   }
                                }
                                 break;
                             case "adduser":
@@ -78,33 +84,42 @@ public class PayrollCommand implements CommandExecutor {
                                     PayrollEntry e = myPayrollStorage.myPayrolls.get(args[1]);
                                     if(e == null) {
                                         sender.sendMessage(ChatColor.RED + "No such payroll: " + args[1]);
-                                        return false;
+                                    } else {
+                                        Player p = Bukkit.getPlayer(args[2]);
+                                        if(p == null) {
+                                            sender.sendMessage(ChatColor.RED + "No such player: " + args[2]);
+                                        } else {
+                                            e.addPlayer(p);
+                                            sender.sendMessage(ChatColor.AQUA + args[2] + " removed added successfully to " + args[1] + "!");
+                                        }
                                     }
-                                    Player p = Bukkit.getPlayer(args[2]);
-                                    if(p == null) {
-                                        sender.sendMessage(ChatColor.RED + "No such player: " + args[2]);
-                                        return false;
-                                    }
-                                    e.addPlayer(p);
-                                    sender.sendMessage(ChatColor.AQUA + args[2] + " removed added successfully to " + args[1] + "!");
-
                                     return true;
                                 } 
                                 break;
                             case "rm":
-                                // TODO: Remove payroll.
+                                if(args.length == 2) {
+                                    PayrollEntry e = myPayrollStorage.myPayrolls.get(args[1]);
+                                    if(e == null) {
+                                        sender.sendMessage(ChatColor.RED + "No such payroll: " + args[1]);
+                                    } else {
+                                        myPayrollStorage.myPayrolls.remove(e);
+                                        sender.sendMessage(ChatColor.AQUA + args[1] + " successfully removed.");
+                                    }
+                                    return true;
+                                } 
+                                
                                 break;
                             case "rmuser":
                                 if(args.length == 3) {
                                     PayrollEntry e = myPayrollStorage.myPayrolls.get(args[1]);
                                     if(e == null) {
                                         sender.sendMessage(ChatColor.RED + "No such payroll: " + args[1]);
-                                        return false;
+                                        return true;
                                     }
                                     Player p = Bukkit.getPlayer(args[2]);
                                     if(p == null) {
                                         sender.sendMessage(ChatColor.RED + "No such player: " + args[2]);
-                                        return false;
+                                        return true;
                                     }
                                     if(e.removePlayer(p)) {
                                         sender.sendMessage(ChatColor.AQUA + args[2] + " removed successfully from " + args[1] + "!");
@@ -114,8 +129,34 @@ public class PayrollCommand implements CommandExecutor {
                                     return true;
                                 } 
                                 break;
-                            case "set":
-                                // TODO: set <payroll> <option> <arg(s)>
+                            case "lsuser":
+                                if(args.length >= 2) {
+                                    int pg = 1;
+                                    if(args.length == 3 ) {
+                                        try {
+                                            pg = Integer.parseInt(args[1]);
+                                        } catch(NumberFormatException e) {
+                                            sender.sendMessage(ChatColor.RED + "Invalid page number: " + args[1]);
+                                            return true;
+                                        }
+                                    }
+                                    Collection<PayrollEntry> v = myPayrollStorage.myPayrolls.values();
+                                    LinkedList<PayrollEntry> usersPayrolls = new LinkedList<>();
+                                    for(PayrollEntry e : v) {
+                                        if(e.myPlayers.contains(args[1])) {
+                                            usersPayrolls.add(e);
+                                        }
+                                    }
+                                    Paginate.paginator(usersPayrolls, sender, pg, 5);
+                                    return true;
+                                }
+                                break;
+                            case "mod":
+                                if(args.length >= 2) {
+                                    switch(args[1]) {
+                                        // TODO: mod <payroll> <option> <arg(s)>
+                                    }
+                                }
                                 break;
                         }
                     }
