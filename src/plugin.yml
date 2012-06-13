@@ -1,0 +1,31 @@
+name: Payroll
+main: com.gmail.czahrien.Payroll.Plugin.PayrollPlugin
+version: 0.0
+
+commands:
+  payroll:
+    description: Shows the payrolls that the user is a part of.
+    aliases: [pr]
+    permission: Payroll.user
+    usage: /payroll
+  payrolls:
+    description: Administration commands for the Payroll plugin.
+    aliases: [prs,pra]
+    permission: Payroll.admin
+    usage: | 
+      /payrolls <cmd> <arg1> ... <argn>
+      /payrolls help - list the commands and how to use them
+
+permissions:
+  Payroll.*:
+    description: Gives access to all payroll commands.
+    children:
+      Payroll.user: true
+      Payroll.admin: true
+  Payroll.user:
+    description: Allows users to see the payrolls which they are a part of.
+    default: true
+  Payroll.admin:
+    description: Alows a user to add, remove, and modify payrolls and the users which are a part of them.
+    default: op
+        
